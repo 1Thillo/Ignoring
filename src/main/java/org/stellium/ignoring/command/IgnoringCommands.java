@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -44,6 +45,9 @@ public class IgnoringCommands {
 
         dispatcher.register(ClientCommands.literal("!ignoring:reload")
             .executes(IgnoringCommands::reload));
+
+        dispatcher.register(ClientCommands.literal("!ignoring:version")
+            .executes(IgnoringCommands::version));
 
         dispatcher.register(ClientCommands.literal("!ignoring:help")
             .executes(IgnoringCommands::help));
@@ -186,6 +190,23 @@ public class IgnoringCommands {
         }
     }
 
+    private static int version(CommandContext<FabricClientCommandSource> context) {
+        context.getSource().sendFeedback(Component.translatable(
+                "text.ignoring.command.version.success",
+                modVersion("ignoring"),
+                modVersion("minecraft"))
+            .withStyle(ChatFormatting.GREEN));
+
+        return 1;
+    }
+
+    private static String modVersion(String modId) {
+        return FabricLoader.getInstance()
+            .getModContainer(modId)
+            .map(container -> container.getMetadata().getVersion().getFriendlyString())
+            .orElse("unknown");
+    }
+
     private static int help(CommandContext<FabricClientCommandSource> context) {
         context.getSource().sendFeedback(Component.translatable("text.ignoring.command.help.header")
             .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
@@ -234,6 +255,11 @@ public class IgnoringCommands {
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.reload").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("!ignoring:version")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.version").withStyle(ChatFormatting.GRAY)));
 
         context.getSource().sendFeedback(Component.literal("!ignoring:help")
             .withStyle(ChatFormatting.YELLOW)

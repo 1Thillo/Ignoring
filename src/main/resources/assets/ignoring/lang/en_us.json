@@ -45,6 +45,7 @@
   "text.ignoring.command.help.listignore": "List all ignored players",
   "text.ignoring.command.help.transparency": "Set transparency value",
   "text.ignoring.command.help.reload": "Reload config from file",
+  "text.ignoring.command.help.version": "Show the installed Ignoring version",
   "text.ignoring.command.help.help": "Show this help message",
 
   "text.ignoring.command.addignore.success": "Added '%s' to ignore list",
@@ -55,5 +56,6 @@
   "text.ignoring.command.listignore.empty": "Ignore list is empty",
   "text.ignoring.command.transparency.success": "Transparency set to: %d",
   "text.ignoring.command.reload.success": "Config reloaded successfully",
-  "text.ignoring.command.reload.failed": "Failed to reload config: %s"
+  "text.ignoring.command.reload.failed": "Failed to reload config: %s",
+  "text.ignoring.command.version.success": "Ignoring %s for Minecraft %s"
 }

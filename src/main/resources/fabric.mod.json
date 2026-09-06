@@ -8,7 +8,7 @@
   "contact": {
     "repo": "https://github.com/stellium1/Ignoring"
   },
-  "license": "MIT",
+  "license": "LGPL-3.0-only",
   "icon": "assets/ignoring/icon.png",
   "environment": "*",
   "entrypoints": {

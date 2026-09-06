@@ -1,30 +1,30 @@
 package org.stellium.ignoring.mixin.client;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public class MinecraftClientMixin {
-    @Shadow @Nullable public ClientPlayerInteractionManager interactionManager;
-    @Shadow @Nullable public ClientPlayerEntity player;
-    @Shadow @Nullable public ClientWorld world;
+    @Shadow @Nullable public MultiPlayerGameMode gameMode;
+    @Shadow @Nullable public LocalPlayer player;
+    @Shadow @Nullable public ClientLevel level;
 
     @Redirect(
-            method = "doAttack",
+            method = "startAttack",
             at = @At(value = "INVOKE",
-                target = "Lnet/minecraft/client/world/ClientWorld;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;"
+                target = "Lnet/minecraft/client/multiplayer/ClientLevel;getBlockState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/state/BlockState;"
             )
     )
-    private BlockState onGetBlockState(ClientWorld world, BlockPos pos) {
+    private BlockState onGetBlockState(ClientLevel world, BlockPos pos) {
 
         return null;
     }

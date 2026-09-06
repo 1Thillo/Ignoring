@@ -1,12 +1,12 @@
 package org.stellium.ignoring.mixin.network;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -21,19 +21,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
 
     @Shadow
     @Mutable
     @Final
-    private Set<PlayerListEntry> listedPlayerListEntries;
+    private Set<PlayerInfo> listedPlayers;
 
-    @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
-    private void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleSystemChat", at = @At("HEAD"), cancellable = true)
+    private void onGameMessage(ClientboundSystemChatPacket packet, CallbackInfo ci) {
         IgnoringConfig config = IgnoringConfig.get();
 
-        Text original = packet.content();
+        Component original = packet.content();
         String raw = original.getString();
 
         if (config.ignoreChat) {
@@ -51,14 +51,14 @@ public class ClientPlayNetworkHandlerMixin {
 
         if (!config.ignoreSpecialCharacter) return;
 
-        Text modified = trimTailOne(original);
+        Component modified = trimTailOne(original);
         if (modified == null) return;
 
         ci.cancel();
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(modified);
+        Minecraft.getInstance().gui.hud.getChat().addServerSystemMessage(modified);
     }
 
-    private static Text trimTailOne(Text original) {
+    private static Component trimTailOne(Component original) {
         List<Style> styles = new ArrayList<>();
         List<String> strings = new ArrayList<>();
 
@@ -84,11 +84,11 @@ public class ClientPlayNetworkHandlerMixin {
         int start = s.offsetByCodePoints(off, -1);
         strings.set(pi, s.substring(0, start) + s.substring(off));
 
-        MutableText out = Text.empty();
+        MutableComponent out = Component.empty();
         for (int k = 0; k < strings.size(); k++) {
             String part = strings.get(k);
             if (part == null || part.isEmpty()) continue;
-            out.append(Text.literal(part).setStyle(styles.get(k)));
+            out.append(Component.literal(part).setStyle(styles.get(k)));
         }
         return out;
     }

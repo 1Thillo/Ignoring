@@ -1,6 +1,6 @@
 package org.stellium.ignoring.render;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import org.stellium.ignoring.config.IgnoringConfig;
 import org.stellium.ignoring.entity.EntityCaptures;
 

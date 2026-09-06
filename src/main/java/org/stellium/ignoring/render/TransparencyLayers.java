@@ -1,11 +1,11 @@
 package org.stellium.ignoring.render;
 
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import org.stellium.ignoring.config.IgnoringConfig;
 import org.stellium.ignoring.entity.EntityCaptures;
 import org.stellium.ignoring.mixin.accessor.RenderLayerAccessor;
@@ -29,42 +29,42 @@ public class TransparencyLayers {
 		IgnoringConfig.init();
 	}
 
-    public static RenderLayer getArmorLayer(boolean cull, Identifier texture, Supplier<RenderLayer> original) {
+    public static RenderType getArmorLayer(boolean cull, Identifier texture, Supplier<RenderType> original) {
         if (canReplaceRenderLayer()) {
             if (cull) {
-                return RenderLayers.itemEntityTranslucentCull(texture);
+                return RenderTypes.entityTranslucentCullItemTarget(texture);
             } else {
-                return RenderLayers.entityTranslucent(texture);
+                return RenderTypes.entityTranslucent(texture);
             }
         }
         return original.get();
     }
 
-	public static RenderLayer getLayer(Identifier texture, Supplier<RenderLayer> original) {
+	public static RenderType getLayer(Identifier texture, Supplier<RenderType> original) {
 		if (canReplaceRenderLayer()) {
-			return RenderLayers.itemEntityTranslucentCull(texture);
+			return RenderTypes.entityTranslucentCullItemTarget(texture);
 		}
 		return original.get();
 	}
 
-	public static RenderLayer getItemLayer(RenderLayer original) {
+	public static RenderType getItemLayer(RenderType original) {
 		if (!canReplaceRenderLayer()) {
 			return original;
 		}
 
 		Identifier texture = getTextureLocation(original);
-		if (SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE.equals(texture)) {
-			return TexturedRenderLayers.getBlockTranslucentCull();
+		if (TextureAtlas.LOCATION_BLOCKS.equals(texture)) {
+			return Sheets.translucentBlockItemSheet();
 		}
 
-		return TexturedRenderLayers.getItemTranslucentCull();
+		return Sheets.translucentItemSheet();
 	}
 
-	    public static RenderLayer getItemLayer(Supplier<RenderLayer> original) {
+	    public static RenderType getItemLayer(Supplier<RenderType> original) {
 	        return getItemLayer(original.get());
 	    }
 
-    private static Identifier getTextureLocation(RenderLayer layer) {
+    private static Identifier getTextureLocation(RenderType layer) {
         try {
             Map<String, Object> textures = ((RenderSetupAccessor) (Object) ((RenderLayerAccessor) (Object) layer).ignoring$getRenderSetup()).ignoring$getTextures();
             if (textures == null || textures.isEmpty()) {

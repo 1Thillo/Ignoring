@@ -1,6 +1,6 @@
 package org.stellium.ignoring.entity;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityCaptures {

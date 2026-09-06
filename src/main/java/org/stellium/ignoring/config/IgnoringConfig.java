@@ -5,9 +5,9 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class IgnoringConfig implements ConfigData {
     }
 
     public boolean shouldIgnorePlayer(Entity entity) {
-        if (!(entity instanceof PlayerEntity player)) {
+        if (!(entity instanceof Player player)) {
             return false;
         }
 
@@ -76,7 +76,7 @@ public class IgnoringConfig implements ConfigData {
             return !isLocalPlayer(player);
         }
 
-        return isListedName(player.getNameForScoreboard())
+        return isListedName(player.getScoreboardName())
             || isListedName(player.getName().getString())
             || isListedName(player.getGameProfile().name());
     }
@@ -97,18 +97,18 @@ public class IgnoringConfig implements ConfigData {
         return value != null && ignoredPlayerList.contains(value);
     }
 
-    private boolean isLocalPlayer(PlayerEntity player) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        return client != null && client.player != null && client.player.getUuid().equals(player.getUuid());
+    private boolean isLocalPlayer(Player player) {
+        Minecraft client = Minecraft.getInstance();
+        return client != null && client.player != null && client.player.getUUID().equals(player.getUUID());
     }
 
     private boolean isLocalPlayerName(String playerName) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) {
             return false;
         }
 
-        if (playerName.equals(client.player.getNameForScoreboard())) {
+        if (playerName.equals(client.player.getScoreboardName())) {
             return true;
         }
 

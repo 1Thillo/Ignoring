@@ -1,7 +1,7 @@
 package org.stellium.ignoring.entity;
 
 import lombok.*;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import org.jetbrains.annotations.Nullable;
 

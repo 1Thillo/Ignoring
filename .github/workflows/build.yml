@@ -47,6 +47,7 @@ jobs:
     name: Client smoke test
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -63,7 +64,7 @@ jobs:
       - name: Install a headless OpenGL stack
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libgl1 libgl1-mesa-dri libglx-mesa0 mesa-utils
+          sudo apt-get install -y xvfb libgl1 libgl1-mesa-dri libglx-mesa0 libxi6 libxcursor1 libxrandr2 libxinerama1 libxxf86vm1
 
       # A green `./gradlew build` proves very little for a Fabric mod: mixin
       # targets are only resolved when the game loads the class they patch, so
@@ -72,7 +73,6 @@ jobs:
       - name: Boot the client and watch for mixin failures
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
-          MESA_GL_VERSION_OVERRIDE: '4.5'
         run: |
           set -uo pipefail
           mkdir -p run/logs
@@ -113,7 +113,7 @@ jobs:
             exit 1
           fi
 
-          if ! grep -q 'ignoring ' run/logs/latest.log; then
+          if ! grep -q -- '- ignoring ' run/logs/latest.log; then
             echo "::error::The loader did not list the mod as loaded."
             exit 1
           fi

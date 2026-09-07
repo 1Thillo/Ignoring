@@ -54,6 +54,10 @@ All of these can be rebound under Options → Controls → Ignoring Hotkeys.
 | unbound | Toggle ignore tab list |
 | unbound | Toggle click through ignored players |
 
+The two punctuation keys are bound by physical position, not by the character printed on
+them, so their label depends on your keyboard layout. On a German layout they are `Ö` and
+`Ä`. The controls screen always shows the key you actually have to press.
+
 ### Commands
 
 These are client commands: they run on your client only and nothing is sent to the

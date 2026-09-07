@@ -34,6 +34,7 @@ public class IgnoringCommands {
         sub(root, "togglenameplates", IgnoringCommands::toggleNameplates);
         sub(root, "toggleparticles", IgnoringCommands::toggleParticles);
         sub(root, "toggleinteraction", IgnoringCommands::toggleInteraction);
+        sub(root, "togglevoicechat", IgnoringCommands::toggleVoiceChat);
         sub(root, "listignore", IgnoringCommands::listIgnore);
         sub(root, "reload", IgnoringCommands::reload);
         sub(root, "version", IgnoringCommands::version);
@@ -133,6 +134,28 @@ public class IgnoringCommands {
             .append(Component.literal(": "))
             .append(Component.translatable(config.ignoreParticles ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
                 .withStyle(config.ignoreParticles ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
+    private static int toggleVoiceChat(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.muteVoiceChat = !config.muteVoiceChat;
+        saveConfig();
+
+        if (!config.muteVoiceChat) {
+            org.stellium.ignoring.compat.VoiceChatCompat.unmuteAll();
+        }
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.muteVoiceChat")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.muteVoiceChat ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.muteVoiceChat ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        if (config.muteVoiceChat && !org.stellium.ignoring.compat.VoiceChatCompat.isInstalled()) {
+            context.getSource().sendFeedback(Component.translatable("text.ignoring.command.togglevoicechat.missing")
+                .withStyle(ChatFormatting.YELLOW));
+        }
 
         return 1;
     }
@@ -308,6 +331,11 @@ public class IgnoringCommands {
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.toggleparticles").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("/ignoring togglevoicechat")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.togglevoicechat").withStyle(ChatFormatting.GRAY)));
 
         context.getSource().sendFeedback(Component.literal("/ignoring toggleinteraction")
             .withStyle(ChatFormatting.YELLOW)

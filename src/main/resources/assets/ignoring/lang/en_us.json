@@ -4,6 +4,7 @@
   "text.autoconfig.ignoring.option.ignoreRender": "Ignore Player Render",
   "text.autoconfig.ignoring.option.ignoreNameplates": "Ignore Server Name Plates",
   "text.autoconfig.ignoring.option.ignoreParticles": "Ignore Particles Around Them",
+  "text.autoconfig.ignoring.option.muteVoiceChat": "Mute In Simple Voice Chat",
   "text.autoconfig.ignoring.option.ignoreTablist": "Ignore Tablist",
   "text.autoconfig.ignoring.option.ignoredPlayerList": "Ignored Player List",
   "text.autoconfig.ignoring.option.transparency": "Ignored Player Transparency",
@@ -15,6 +16,7 @@
   "text.autoconfig.ignoring.option.ignoreRender.@Tooltip": "Toggle rendering of blocked players.",
   "text.autoconfig.ignoring.option.ignoreNameplates.@Tooltip": "Hides floating name plates that show an ignored player's name. For servers that draw their own name plates as separate entities instead of using the vanilla name tag. Uses the ignore list only, never Ignoring Everyone.",
   "text.autoconfig.ignoring.option.ignoreParticles.@Tooltip": "Drops particles that land within three blocks of an ignored player, for plugins that give players particle effects. Anything else happening that close to them is dropped too.",
+  "text.autoconfig.ignoring.option.muteVoiceChat.@Tooltip": "Sets ignored players to 0% in Simple Voice Chat, and back to 100% once they leave the ignore list. Only touches players muted this way, never a volume you set by hand. Does nothing without Simple Voice Chat installed.",
   "text.autoconfig.ignoring.option.ignoreTablist.@Tooltip": "Toggle display of blocked players on the tablist.",
   "text.autoconfig.ignoring.option.transparency.@Tooltip": "How visible ignored players stay. 255 leaves them unchanged, 0 hides them completely.",
   "text.autoconfig.ignoring.option.interactionThroughIgnoredPlayer.@Tooltip[0]": "Allows clicking blocks/entities behind ignored players.",
@@ -36,6 +38,7 @@
   "text.ignoring.toggle.ignoreChat": "Ignore Chat",
   "text.ignoring.toggle.ignoreNameplates": "Ignore Name Plates",
   "text.ignoring.toggle.ignoreParticles": "Ignore Particles",
+  "text.ignoring.toggle.muteVoiceChat": "Mute In Voice Chat",
   "text.ignoring.toggle.ignoreTablist": "Ignore Tablist",
   "text.ignoring.toggle.interactionThroughIgnoredPlayer": "Click-Through",
   "text.ignoring.status.enabled": "Enabled",
@@ -47,6 +50,7 @@
   "text.ignoring.command.help.toggletablist": "Toggle tablist ignoring",
   "text.ignoring.command.help.togglenameplates": "Toggle hiding server drawn name plates",
   "text.ignoring.command.help.toggleparticles": "Toggle hiding particles around ignored players",
+  "text.ignoring.command.help.togglevoicechat": "Toggle muting ignored players in Simple Voice Chat",
   "text.ignoring.command.help.toggleinteraction": "Toggle interaction through ignored players",
   "text.ignoring.command.help.addignore": "Add player to ignore list",
   "text.ignoring.command.help.removeignore": "Remove player from ignore list",
@@ -65,5 +69,6 @@
   "text.ignoring.command.transparency.success": "Transparency set to: %d",
   "text.ignoring.command.reload.success": "Config reloaded successfully",
   "text.ignoring.command.reload.failed": "Failed to reload config: %s",
+  "text.ignoring.command.togglevoicechat.missing": "Simple Voice Chat is not installed, so this will not do anything yet.",
   "text.ignoring.command.version.success": "Ignoring %s for Minecraft %s"
 }

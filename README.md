@@ -19,6 +19,7 @@ player is affected, and nothing you do here changes what anyone else sees.
 | **Ignore tab list** | Ignored players are removed from the player list you see when holding Tab. |
 | **Ignore server name plates** | Hides floating name plates that show an ignored player's name, for servers that draw their own instead of using the vanilla name tag. Off by default. |
 | **Ignore particles** | Drops particles landing within three blocks of an ignored player, for plugins that give players particle effects. Off by default, and a proximity guess rather than ownership. |
+| **Mute in Simple Voice Chat** | Sets ignored players to 0% in [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) and back to 100% once they leave the list. Off by default, and does nothing without that mod installed. |
 | **Click through** | Blocks and entities behind an ignored player stay clickable, so someone standing in your way cannot block you. |
 | **Ignore everyone** | Applies all of the above to every player except yourself, without listing them one by one. |
 | **Strip trailing symbols** | Removes a single decorative symbol from the end of incoming chat messages. Applies to all messages, not only ignored players. |
@@ -32,6 +33,7 @@ player is affected, and nothing you do here changes what anyone else sees.
 - [Fabric API](https://modrinth.com/mod/fabric-api)
 - [Cloth Config](https://modrinth.com/mod/cloth-config)
 - [Mod Menu](https://modrinth.com/mod/modmenu) — optional, adds a settings button next to the mod in the mod list
+- [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) — optional, needed only for the muting option
 
 ## Using it
 
@@ -67,6 +69,7 @@ server. Running `/ignoring` on its own prints this list in game.
 | `/ignoring toggletablist` | Toggle ignore tab list |
 | `/ignoring togglenameplates` | Toggle hiding server drawn name plates |
 | `/ignoring toggleparticles` | Toggle hiding particles around ignored players |
+| `/ignoring togglevoicechat` | Toggle muting ignored players in Simple Voice Chat |
 | `/ignoring toggleinteraction` | Toggle click through ignored players |
 | `/ignoring transparency <0-255>` | Set how visible ignored players stay |
 | `/ignoring reload` | Reload the config file from disk |

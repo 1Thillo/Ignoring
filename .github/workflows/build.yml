@@ -62,10 +62,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           # This job stops the client with SIGTERM once it has finished starting
-          # up, so Gradle always records :runClient as failed with exit 143. The
-          # job decides success from its own log checks, so an always-on Gradle
-          # summary would show a red cross next to a green job.
-          add-job-summary: on-failure
+          # up, so :runClient always ends as a failed Gradle build with exit 143.
+          # The action decides its summary from whether any Gradle build failed,
+          # not from whether the job failed, so 'on-failure' would still fire
+          # every single time and paint a red cross next to a green job. The
+          # job's own log checks and the uploaded client log carry the diagnosis.
+          add-job-summary: never
 
       - name: Install a headless OpenGL stack
         run: |

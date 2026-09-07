@@ -81,9 +81,13 @@ jobs:
             ./gradlew runClient --stacktrace > client-output.log 2>&1 &
           gradle_pid=$!
 
+          # The runner has no audio device, so the client logs "Failed to open
+          # OpenAL device" and never reaches "Sound engine started". Key on the
+          # block atlas instead: by the time it exists the client has a working
+          # GL context and has finished its startup resource reload.
           started=0
           for _ in $(seq 1 180); do
-            if grep -q 'Sound engine started' run/logs/latest.log 2>/dev/null; then
+            if grep -qE 'minecraft:textures/atlas/blocks\.png-atlas|Sound engine started' run/logs/latest.log 2>/dev/null; then
               started=1
               break
             fi
@@ -93,6 +97,11 @@ jobs:
             sleep 5
           done
 
+          # let the tail of the reload settle so late class loads still show up
+          if [ "$started" -eq 1 ]; then
+            sleep 30
+          fi
+
           kill "$gradle_pid" 2>/dev/null || true
           pkill -f 'net.fabricmc.devlaunchinjector.Main' 2>/dev/null || true
           sleep 5
@@ -101,9 +110,14 @@ jobs:
           tail -n 100 run/logs/latest.log || true
 
           if [ "$started" -ne 1 ]; then
-            echo "::error::The client never reached the main menu."
+            echo "::error::The client never finished starting up."
             echo "===== gradle output ====="
             tail -n 200 client-output.log || true
+            exit 1
+          fi
+
+          if grep -qE 'Minecraft has crashed|Exception in thread "main"' run/logs/latest.log; then
+            echo "::error::The client crashed during startup."
             exit 1
           fi
 
@@ -118,7 +132,7 @@ jobs:
             exit 1
           fi
 
-          echo "The client reached the main menu with every mixin applied."
+          echo "The client finished starting up with every mixin applied."
 
       - name: Upload the client log
         if: always()

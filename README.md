@@ -58,8 +58,8 @@ name itself starts with `!`, so the full input is `/!ignoring:...`.
 
 | Command | What it does |
 | --- | --- |
-| `/!ignoring:addignore <player>` | Add a player to the ignore list |
-| `/!ignoring:removeignore <player>` | Remove a player from the ignore list |
+| `/!ignoring:addignore <player>` | Add a player to the ignore list. Tab completes from everyone online who is not on it yet |
+| `/!ignoring:removeignore <player>` | Remove a player from the ignore list. Tab completes from the list |
 | `/!ignoring:listignore` | Show everyone currently ignored |
 | `/!ignoring:togglerender` | Toggle ignore rendering |
 | `/!ignoring:togglechat` | Toggle ignore chat |

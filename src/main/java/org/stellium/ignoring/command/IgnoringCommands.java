@@ -4,14 +4,20 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import org.stellium.ignoring.config.IgnoringConfig;
+
+import java.util.concurrent.CompletableFuture;
 
 public class IgnoringCommands {
 
@@ -36,10 +42,12 @@ public class IgnoringCommands {
 
         dispatcher.register(ClientCommands.literal("!ignoring:addignore")
             .then(ClientCommands.argument("player", StringArgumentType.string())
+                .suggests(IgnoringCommands::suggestOnlinePlayers)
                 .executes(IgnoringCommands::addIgnore)));
 
         dispatcher.register(ClientCommands.literal("!ignoring:removeignore")
             .then(ClientCommands.argument("player", StringArgumentType.string())
+                .suggests(IgnoringCommands::suggestIgnoredPlayers)
                 .executes(IgnoringCommands::removeIgnore)));
 
         dispatcher.register(ClientCommands.literal("!ignoring:listignore")
@@ -135,6 +143,34 @@ public class IgnoringCommands {
                 .withStyle(config.interactionThroughIgnoredPlayer ? ChatFormatting.GREEN : ChatFormatting.RED)));
 
         return 1;
+    }
+
+    /** Everyone currently online who is not on the list yet. */
+    private static CompletableFuture<Suggestions> suggestOnlinePlayers(
+        CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
+
+        ClientPacketListener connection = context.getSource().getClient().getConnection();
+        if (connection == null) {
+            return Suggestions.empty();
+        }
+
+        IgnoringConfig config = IgnoringConfig.get();
+
+        return SharedSuggestionProvider.suggest(
+            connection.getOnlinePlayers().stream()
+                .map(entry -> entry.getProfile().name())
+                .filter(name -> name != null && !name.isBlank() && !config.ignoredPlayerList.contains(name)),
+            builder);
+    }
+
+    /** Everyone already on the list, so removing one does not need typing either. */
+    private static CompletableFuture<Suggestions> suggestIgnoredPlayers(
+        CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
+
+        return SharedSuggestionProvider.suggest(
+            IgnoringConfig.get().ignoredPlayerList.stream()
+                .filter(name -> name != null && !name.isBlank()),
+            builder);
     }
 
     private static int addIgnore(CommandContext<FabricClientCommandSource> context) {

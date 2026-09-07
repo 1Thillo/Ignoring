@@ -89,6 +89,24 @@ If you would rather not fight the screen, `/ignoring addignore <player>` and
 `/ignoring removeignore <player>` edit the same list and always work. You can also edit
 `config/ignoring.json` by hand and run `/ignoring reload`.
 
+## Translations
+
+The mod follows whatever language Minecraft is set to. English and German ship with it,
+and Korean is there from the original author.
+
+Adding one is a single file and needs no code. Copy
+`src/main/resources/assets/ignoring/lang/en_us.json` to the language code you want, for
+example `fr_fr.json`, and translate the values. Leave the keys alone, keep the `%s` and
+`%d` placeholders in place, and save the file as UTF-8. Minecraft falls back to English
+for any key a file does not have, so a partial translation works fine and can be filled
+in later.
+
+| File | Language |
+| --- | --- |
+| `en_us.json` | English |
+| `de_de.json` | German |
+| `ko_kr.json` | Korean |
+
 ## Versions
 
 This repository keeps one branch per Minecraft version. Pick the branch that matches

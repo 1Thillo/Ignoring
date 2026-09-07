@@ -3,6 +3,7 @@ package org.stellium.ignoring.mixin.network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -28,6 +29,13 @@ public class ClientPlayNetworkHandlerMixin {
     @Mutable
     @Final
     private Set<PlayerInfo> listedPlayers;
+
+    @Inject(method = "handleParticleEvent", at = @At("HEAD"), cancellable = true)
+    private void ignoring$hideIgnoredParticles(ClientboundLevelParticlesPacket packet, CallbackInfo ci) {
+        if (IgnoringConfig.get().shouldIgnoreParticleAt(packet.getX(), packet.getY(), packet.getZ())) {
+            ci.cancel();
+        }
+    }
 
     @Inject(method = "handleSystemChat", at = @At("HEAD"), cancellable = true)
     private void onGameMessage(ClientboundSystemChatPacket packet, CallbackInfo ci) {

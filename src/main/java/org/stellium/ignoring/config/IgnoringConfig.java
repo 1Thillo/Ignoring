@@ -17,6 +17,9 @@ import java.util.List;
 @Config(name = "ignoring")
 public class IgnoringConfig implements ConfigData {
 
+    /** How far from an ignored player a particle still counts as theirs, in blocks. */
+    private static final double PARTICLE_RADIUS = 3.0D;
+
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
     public boolean ignoreChat = false;
@@ -28,6 +31,10 @@ public class IgnoringConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
     public boolean ignoreNameplates = false;
+
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.TransitiveObject
+    public boolean ignoreParticles = false;
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
@@ -107,6 +114,31 @@ public class IgnoringConfig implements ConfigData {
 
         for (String ignored : ignoredPlayerList) {
             if (ignored != null && !ignored.isBlank() && text.contains(ignored)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Particle plugins spawn their effects server side at the player's feet. They
+     * arrive as their own packets and are not part of the player's entity
+     * rendering, so nothing in the render path can reach them. Matching them by
+     * how close they land to an ignored player is the only handle available.
+     */
+    public boolean shouldIgnoreParticleAt(double x, double y, double z) {
+        if (!ignoreParticles) {
+            return false;
+        }
+
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.level == null) {
+            return false;
+        }
+
+        for (Player player : client.level.players()) {
+            if (shouldIgnorePlayer(player) && player.distanceToSqr(x, y, z) <= PARTICLE_RADIUS * PARTICLE_RADIUS) {
                 return true;
             }
         }

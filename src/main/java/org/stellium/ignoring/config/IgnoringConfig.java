@@ -17,9 +17,6 @@ import java.util.List;
 @Config(name = "ignoring")
 public class IgnoringConfig implements ConfigData {
 
-    /** How far from an ignored player a particle still counts as theirs, in blocks. */
-    private static final double PARTICLE_RADIUS = 3.0D;
-
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
     public boolean ignoreChat = false;
@@ -137,8 +134,13 @@ public class IgnoringConfig implements ConfigData {
             return false;
         }
 
+        // Kept as a local: AutoConfig walks every field of this class when it
+        // saves and tries to write each one back, which blows up on a static
+        // final and takes the whole save with it.
+        final double radius = 3.0D;
+
         for (Player player : client.level.players()) {
-            if (shouldIgnorePlayer(player) && player.distanceToSqr(x, y, z) <= PARTICLE_RADIUS * PARTICLE_RADIUS) {
+            if (shouldIgnorePlayer(player) && player.distanceToSqr(x, y, z) <= radius * radius) {
                 return true;
             }
         }

@@ -12,7 +12,7 @@
   "text.autoconfig.ignoring.option.ignoreChat.@Tooltip": "Toggle ignoring chat from blocked players.",
   "text.autoconfig.ignoring.option.ignoreRender.@Tooltip": "Toggle rendering of blocked players.",
   "text.autoconfig.ignoring.option.ignoreTablist.@Tooltip": "Toggle display of blocked players on the tablist.",
-  "text.autoconfig.ignoring.option.transparency.@Tooltip": "Adjust transparency of ignored users' rendering.",
+  "text.autoconfig.ignoring.option.transparency.@Tooltip": "How visible ignored players stay. 255 leaves them unchanged, 0 hides them completely.",
   "text.autoconfig.ignoring.option.interactionThroughIgnoredPlayer.@Tooltip[0]": "Allows clicking blocks/entities behind ignored players.",
   "text.autoconfig.ignoring.option.interactionThroughIgnoredPlayer.@Tooltip[1]": "§cWarning! Use this feature at your own risk. Make sure to follow the server rules.",
   "text.autoconfig.ignoring.option.ignoreEveryone.@Tooltip": "Ignore all players on the server",

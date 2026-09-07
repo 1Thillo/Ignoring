@@ -20,7 +20,7 @@ player is affected, and nothing you do here changes what anyone else sees.
 | **Click through** | Blocks and entities behind an ignored player stay clickable, so someone standing in your way cannot block you. |
 | **Ignore everyone** | Applies all of the above to every player except yourself, without listing them one by one. |
 | **Strip trailing symbols** | Removes a single decorative symbol from the end of incoming chat messages. Applies to all messages, not only ignored players. |
-| **Transparency** | How visible ignored players stay, from 0 (invisible) to 255 (fully solid). |
+| **Transparency** | How visible ignored players stay, from 0 (invisible) to 255 (fully solid). This starts at 255, which means turning on *ignore rendering* alone changes nothing you can see until you lower it. |
 
 ## Requirements
 
@@ -52,21 +52,23 @@ All of these can be rebound under Options → Controls → Ignoring Hotkeys.
 
 ### Commands
 
-The commands run on your client only; nothing is sent to the server.
+These are client commands, so they need the leading slash like any other command,
+and they run on your client only: nothing is sent to the server. Note that the command
+name itself starts with `!`, so the full input is `/!ignoring:...`.
 
 | Command | What it does |
 | --- | --- |
-| `!ignoring:addignore <player>` | Add a player to the ignore list |
-| `!ignoring:removeignore <player>` | Remove a player from the ignore list |
-| `!ignoring:listignore` | Show everyone currently ignored |
-| `!ignoring:togglerender` | Toggle ignore rendering |
-| `!ignoring:togglechat` | Toggle ignore chat |
-| `!ignoring:toggletablist` | Toggle ignore tab list |
-| `!ignoring:toggleinteraction` | Toggle click through ignored players |
-| `!ignoring:transparency <0-255>` | Set how visible ignored players stay |
-| `!ignoring:reload` | Reload the config file from disk |
-| `!ignoring:version` | Show which build of Ignoring is installed |
-| `!ignoring:help` | List every command |
+| `/!ignoring:addignore <player>` | Add a player to the ignore list |
+| `/!ignoring:removeignore <player>` | Remove a player from the ignore list |
+| `/!ignoring:listignore` | Show everyone currently ignored |
+| `/!ignoring:togglerender` | Toggle ignore rendering |
+| `/!ignoring:togglechat` | Toggle ignore chat |
+| `/!ignoring:toggletablist` | Toggle ignore tab list |
+| `/!ignoring:toggleinteraction` | Toggle click through ignored players |
+| `/!ignoring:transparency <0-255>` | Set how visible ignored players stay |
+| `/!ignoring:reload` | Reload the config file from disk |
+| `/!ignoring:version` | Show which build of Ignoring is installed |
+| `/!ignoring:help` | List every command |
 
 ## Known issues
 

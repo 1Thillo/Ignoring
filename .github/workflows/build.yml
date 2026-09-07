@@ -60,6 +60,12 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          # This job stops the client with SIGTERM once it has finished starting
+          # up, so Gradle always records :runClient as failed with exit 143. The
+          # job decides success from its own log checks, so an always-on Gradle
+          # summary would show a red cross next to a green job.
+          add-job-summary: on-failure
 
       - name: Install a headless OpenGL stack
         run: |
@@ -102,6 +108,7 @@ jobs:
             sleep 30
           fi
 
+          echo "Startup finished, stopping the client. The 'BUILD FAILED ... exit value 143' below is this SIGTERM, not a real failure."
           kill "$gradle_pid" 2>/dev/null || true
           pkill -f 'net.fabricmc.devlaunchinjector.Main' 2>/dev/null || true
           sleep 5

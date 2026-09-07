@@ -1,17 +1,35 @@
 package org.stellium.ignoring.mixin.player;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.renderer.SubmitNodeCollection;
+import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.stellium.ignoring.config.IgnoringConfig;
 import org.stellium.ignoring.entity.EntityCaptures;
+import org.stellium.ignoring.entity.ItemSubmitMarks;
 
 import static org.stellium.ignoring.util.ArgbUtils.swapAlpha;
 
 @Mixin(SubmitNodeCollection.class)
 public class EntityRendererMixin {
+
+    // Items are drawn in the execute phase, after the entity mark has been
+    // cleared. Tagging the submit node here, while the mark still stands, is
+    // what lets ItemFeatureRenderer recognise it later.
+    @ModifyExpressionValue(
+        method = "submitItem",
+        at = @At(value = "NEW", target = "net/minecraft/client/renderer/feature/ItemFeatureRenderer$Submit")
+    )
+    private ItemFeatureRenderer.Submit ignoring$markItemSubmit(ItemFeatureRenderer.Submit submit) {
+        if (EntityCaptures.MAIN.getEntity() != null) {
+            ItemSubmitMarks.mark(submit);
+        }
+
+        return submit;
+    }
 
     // Armour, elytra, capes and every other feature layer reach the collector
     // through EquipmentLayerRenderer and friends rather than through

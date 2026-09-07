@@ -52,25 +52,24 @@ All of these can be rebound under Options → Controls → Ignoring Hotkeys.
 
 ### Commands
 
-These are client commands, so they need the leading slash like any other command,
-and they run on your client only: nothing is sent to the server. Note that the command
-name itself starts with `!`, so the full input is `/!ignoring:...`.
+These are client commands: they run on your client only and nothing is sent to the
+server. Running `/ignoring` on its own prints this list in game.
 
 | Command | What it does |
 | --- | --- |
-| `/!ignoring:addignore <player>` | Add a player to the ignore list. Tab completes from everyone online who is not on it yet |
-| `/!ignoring:removeignore <player>` | Remove a player from the ignore list. Tab completes from the list |
-| `/!ignoring:listignore` | Show everyone currently ignored |
-| `/!ignoring:togglerender` | Toggle ignore rendering |
-| `/!ignoring:togglechat` | Toggle ignore chat |
-| `/!ignoring:toggletablist` | Toggle ignore tab list |
-| `/!ignoring:togglenameplates` | Toggle hiding server drawn name plates |
-| `/!ignoring:toggleparticles` | Toggle hiding particles around ignored players |
-| `/!ignoring:toggleinteraction` | Toggle click through ignored players |
-| `/!ignoring:transparency <0-255>` | Set how visible ignored players stay |
-| `/!ignoring:reload` | Reload the config file from disk |
-| `/!ignoring:version` | Show which build of Ignoring is installed |
-| `/!ignoring:help` | List every command |
+| `/ignoring addignore <player>` | Add a player to the ignore list. Tab completes from everyone online who is not on it yet |
+| `/ignoring removeignore <player>` | Remove a player from the ignore list. Tab completes from the list |
+| `/ignoring listignore` | Show everyone currently ignored |
+| `/ignoring togglerender` | Toggle ignore rendering |
+| `/ignoring togglechat` | Toggle ignore chat |
+| `/ignoring toggletablist` | Toggle ignore tab list |
+| `/ignoring togglenameplates` | Toggle hiding server drawn name plates |
+| `/ignoring toggleparticles` | Toggle hiding particles around ignored players |
+| `/ignoring toggleinteraction` | Toggle click through ignored players |
+| `/ignoring transparency <0-255>` | Set how visible ignored players stay |
+| `/ignoring reload` | Reload the config file from disk |
+| `/ignoring version` | Show which build of Ignoring is installed |
+| `/ignoring help` | List every command |
 
 ## Known issues
 
@@ -81,9 +80,9 @@ its text field, so it looks like an unresponsive input box. Scrolling the list s
 row sits well inside the visible area makes it editable again; a lower GUI scale or a
 larger window gives it more room.
 
-If you would rather not fight the screen, `!ignoring:addignore <player>` and
-`!ignoring:removeignore <player>` edit the same list and always work. You can also edit
-`config/ignoring.json` by hand and run `!ignoring:reload`.
+If you would rather not fight the screen, `/ignoring addignore <player>` and
+`/ignoring removeignore <player>` edit the same list and always work. You can also edit
+`config/ignoring.json` by hand and run `/ignoring reload`.
 
 ## Versions
 

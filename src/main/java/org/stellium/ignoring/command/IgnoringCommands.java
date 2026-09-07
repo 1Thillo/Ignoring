@@ -1,56 +1,75 @@
 package org.stellium.ignoring.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import org.stellium.ignoring.config.IgnoringConfig;
 
+import java.util.concurrent.CompletableFuture;
+
 public class IgnoringCommands {
 
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
-        dispatcher.register(ClientCommands.literal("!ignoring:togglerender")
-            .executes(IgnoringCommands::toggleRender));
+        LiteralArgumentBuilder<FabricClientCommandSource> root = ClientCommands.literal("ignoring");
+        root.executes(IgnoringCommands::help);
 
-        dispatcher.register(ClientCommands.literal("!ignoring:togglechat")
-            .executes(IgnoringCommands::toggleChat));
+        sub(root, "togglerender", IgnoringCommands::toggleRender);
+        sub(root, "togglechat", IgnoringCommands::toggleChat);
+        sub(root, "toggletablist", IgnoringCommands::toggleTablist);
+        sub(root, "togglenameplates", IgnoringCommands::toggleNameplates);
+        sub(root, "toggleparticles", IgnoringCommands::toggleParticles);
+        sub(root, "toggleinteraction", IgnoringCommands::toggleInteraction);
+        sub(root, "listignore", IgnoringCommands::listIgnore);
+        sub(root, "reload", IgnoringCommands::reload);
+        sub(root, "version", IgnoringCommands::version);
+        sub(root, "help", IgnoringCommands::help);
 
-        dispatcher.register(ClientCommands.literal("!ignoring:toggletablist")
-            .executes(IgnoringCommands::toggleTablist));
+        RequiredArgumentBuilder<FabricClientCommandSource, String> addPlayer =
+            ClientCommands.argument("player", StringArgumentType.string());
+        addPlayer.suggests(IgnoringCommands::suggestOnlinePlayers);
+        addPlayer.executes(IgnoringCommands::addIgnore);
+        LiteralArgumentBuilder<FabricClientCommandSource> addIgnore = ClientCommands.literal("addignore");
+        addIgnore.then(addPlayer);
+        root.then(addIgnore);
 
-        dispatcher.register(ClientCommands.literal("!ignoring:toggleinteraction")
-            .executes(IgnoringCommands::toggleInteraction));
+        RequiredArgumentBuilder<FabricClientCommandSource, String> removePlayer =
+            ClientCommands.argument("player", StringArgumentType.string());
+        removePlayer.suggests(IgnoringCommands::suggestIgnoredPlayers);
+        removePlayer.executes(IgnoringCommands::removeIgnore);
+        LiteralArgumentBuilder<FabricClientCommandSource> removeIgnore = ClientCommands.literal("removeignore");
+        removeIgnore.then(removePlayer);
+        root.then(removeIgnore);
 
-        dispatcher.register(ClientCommands.literal("!ignoring:addignore")
-            .then(ClientCommands.argument("player", StringArgumentType.string())
-                .executes(IgnoringCommands::addIgnore)));
+        RequiredArgumentBuilder<FabricClientCommandSource, Integer> transparencyValue =
+            ClientCommands.argument("value", IntegerArgumentType.integer(0, 255));
+        transparencyValue.executes(IgnoringCommands::setTransparency);
+        LiteralArgumentBuilder<FabricClientCommandSource> transparency = ClientCommands.literal("transparency");
+        transparency.then(transparencyValue);
+        root.then(transparency);
 
-        dispatcher.register(ClientCommands.literal("!ignoring:removeignore")
-            .then(ClientCommands.argument("player", StringArgumentType.string())
-                .executes(IgnoringCommands::removeIgnore)));
+        dispatcher.register(root);
+    }
 
-        dispatcher.register(ClientCommands.literal("!ignoring:listignore")
-            .executes(IgnoringCommands::listIgnore));
-
-        dispatcher.register(ClientCommands.literal("!ignoring:transparency")
-            .then(ClientCommands.argument("value", IntegerArgumentType.integer(0, 255))
-                .executes(IgnoringCommands::setTransparency)));
-
-        dispatcher.register(ClientCommands.literal("!ignoring:reload")
-            .executes(IgnoringCommands::reload));
-
-        dispatcher.register(ClientCommands.literal("!ignoring:version")
-            .executes(IgnoringCommands::version));
-
-        dispatcher.register(ClientCommands.literal("!ignoring:help")
-            .executes(IgnoringCommands::help));
+    private static void sub(LiteralArgumentBuilder<FabricClientCommandSource> root, String name,
+                            Command<FabricClientCommandSource> action) {
+        LiteralArgumentBuilder<FabricClientCommandSource> node = ClientCommands.literal(name);
+        node.executes(action);
+        root.then(node);
     }
 
     private static int toggleRender(CommandContext<FabricClientCommandSource> context) {
@@ -92,6 +111,32 @@ public class IgnoringCommands {
         return 1;
     }
 
+    private static int toggleNameplates(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.ignoreNameplates = !config.ignoreNameplates;
+        saveConfig();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.ignoreNameplates")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.ignoreNameplates ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.ignoreNameplates ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
+    private static int toggleParticles(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.ignoreParticles = !config.ignoreParticles;
+        saveConfig();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.ignoreParticles")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.ignoreParticles ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.ignoreParticles ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
     private static int toggleInteraction(CommandContext<FabricClientCommandSource> context) {
         IgnoringConfig config = IgnoringConfig.get();
         config.interactionThroughIgnoredPlayer = !config.interactionThroughIgnoredPlayer;
@@ -103,6 +148,34 @@ public class IgnoringCommands {
                 .withStyle(config.interactionThroughIgnoredPlayer ? ChatFormatting.GREEN : ChatFormatting.RED)));
 
         return 1;
+    }
+
+    /** Everyone currently online who is not on the list yet. */
+    private static CompletableFuture<Suggestions> suggestOnlinePlayers(
+        CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
+
+        ClientPacketListener connection = context.getSource().getClient().getConnection();
+        if (connection == null) {
+            return Suggestions.empty();
+        }
+
+        IgnoringConfig config = IgnoringConfig.get();
+
+        return SharedSuggestionProvider.suggest(
+            connection.getOnlinePlayers().stream()
+                .map(entry -> entry.getProfile().name())
+                .filter(name -> name != null && !name.isBlank() && !config.ignoredPlayerList.contains(name)),
+            builder);
+    }
+
+    /** Everyone already on the list, so removing one does not need typing either. */
+    private static CompletableFuture<Suggestions> suggestIgnoredPlayers(
+        CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
+
+        return SharedSuggestionProvider.suggest(
+            IgnoringConfig.get().ignoredPlayerList.stream()
+                .filter(name -> name != null && !name.isBlank()),
+            builder);
     }
 
     private static int addIgnore(CommandContext<FabricClientCommandSource> context) {
@@ -211,57 +284,67 @@ public class IgnoringCommands {
         context.getSource().sendFeedback(Component.translatable("text.ignoring.command.help.header")
             .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:togglerender")
+        context.getSource().sendFeedback(Component.literal("/ignoring togglerender")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.togglerender").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:togglechat")
+        context.getSource().sendFeedback(Component.literal("/ignoring togglechat")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.togglechat").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:toggletablist")
+        context.getSource().sendFeedback(Component.literal("/ignoring toggletablist")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.toggletablist").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:toggleinteraction")
+        context.getSource().sendFeedback(Component.literal("/ignoring togglenameplates")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.togglenameplates").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("/ignoring toggleparticles")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.toggleparticles").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("/ignoring toggleinteraction")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.toggleinteraction").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:addignore <player>")
+        context.getSource().sendFeedback(Component.literal("/ignoring addignore <player>")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.addignore").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:removeignore <player>")
+        context.getSource().sendFeedback(Component.literal("/ignoring removeignore <player>")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.removeignore").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:listignore")
+        context.getSource().sendFeedback(Component.literal("/ignoring listignore")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.listignore").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:transparency <0-255>")
+        context.getSource().sendFeedback(Component.literal("/ignoring transparency <0-255>")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.transparency").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:reload")
+        context.getSource().sendFeedback(Component.literal("/ignoring reload")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.reload").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:version")
+        context.getSource().sendFeedback(Component.literal("/ignoring version")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.version").withStyle(ChatFormatting.GRAY)));
 
-        context.getSource().sendFeedback(Component.literal("!ignoring:help")
+        context.getSource().sendFeedback(Component.literal("/ignoring help")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.help").withStyle(ChatFormatting.GRAY)));

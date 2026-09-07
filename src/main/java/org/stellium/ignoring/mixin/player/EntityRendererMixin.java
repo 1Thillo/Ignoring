@@ -1,16 +1,55 @@
 package org.stellium.ignoring.mixin.player;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.renderer.SubmitNodeCollection;
+import net.minecraft.client.renderer.feature.ItemFeatureRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.stellium.ignoring.config.IgnoringConfig;
 import org.stellium.ignoring.entity.EntityCaptures;
+import org.stellium.ignoring.entity.ItemSubmitMarks;
 
 import static org.stellium.ignoring.util.ArgbUtils.swapAlpha;
 
 @Mixin(SubmitNodeCollection.class)
 public class EntityRendererMixin {
+
+    // Items are drawn in the execute phase, after the entity mark has been
+    // cleared. Tagging the submit node here, while the mark still stands, is
+    // what lets ItemFeatureRenderer recognise it later.
+    @ModifyExpressionValue(
+        method = "submitItem",
+        at = @At(value = "NEW", target = "net/minecraft/client/renderer/feature/ItemFeatureRenderer$Submit")
+    )
+    private ItemFeatureRenderer.Submit ignoring$markItemSubmit(ItemFeatureRenderer.Submit submit) {
+        if (EntityCaptures.MAIN.getEntity() != null) {
+            ItemSubmitMarks.mark(submit);
+        }
+
+        return submit;
+    }
+
+    // Armour, elytra, capes and every other feature layer reach the collector
+    // through EquipmentLayerRenderer and friends rather than through
+    // LivingEntityRenderer.submit, so wrapping the call site there misses them.
+    // ModelPart.compile used to catch the rest, but in 26.2 that runs in the
+    // execute phase, long after the entity mark has been cleared. Taking the
+    // colour here covers everything submitted while a player is marked.
+    @ModifyVariable(
+        method = "submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IIILnet/minecraft/client/renderer/texture/TextureAtlasSprite;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V",
+        at = @At("HEAD"),
+        argsOnly = true,
+        index = 7
+    )
+    private int ignoring$adjustModelColor(int color) {
+        if (EntityCaptures.MAIN.getEntity() == null) {
+            return color;
+        }
+
+        return swapAlpha(color, IgnoringConfig.get().transparency);
+    }
 
     @ModifyArg(
         method = "submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZILnet/minecraft/client/renderer/state/level/CameraRenderState;)V",

@@ -52,6 +52,28 @@ public class TransparencyLayers {
 			return original;
 		}
 
+		return swapItemLayer(original);
+	}
+
+	/**
+	 * Used from the execute phase, where the entity mark is already gone and the
+	 * submit node is what tells us the item belongs to an ignored player.
+	 */
+	public static RenderType getMarkedItemLayer(RenderType original) {
+		IgnoringConfig config;
+		try {
+			config = IgnoringConfig.get();
+		} catch (Exception e) {
+			return original;
+		}
+		if (config == null || !config.ignoreRender) {
+			return original;
+		}
+
+		return swapItemLayer(original);
+	}
+
+	private static RenderType swapItemLayer(RenderType original) {
 		Identifier texture = getTextureLocation(original);
 		if (TextureAtlas.LOCATION_BLOCKS.equals(texture)) {
 			return Sheets.translucentBlockItemSheet();

@@ -10,6 +10,7 @@
     "accessor.RenderSetupTextureSpecAccessor",
     "armor.EquipmentRendererMixin",
     "fixes.GameRendererMixin",
+    "fixes.LevelExtractorMixin",
     "hud.PlayerListHudInvoker",
     "hud.PlayerTabOverlayMixin",
     "item.ItemRendererMixin",

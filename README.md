@@ -17,10 +17,12 @@ player is affected, and nothing you do here changes what anyone else sees.
 | **Ignore chat** | Chat messages that mention an ignored player are dropped before they reach your chat window. |
 | **Ignore rendering** | Ignored players are drawn transparently, or hidden completely at transparency 0. Armour, held items, name tags and shadows all follow the same setting. |
 | **Ignore tab list** | Ignored players are removed from the player list you see when holding Tab. |
+| **Ignore server name plates** | Hides floating name plates that show an ignored player's name, for servers that draw their own instead of using the vanilla name tag. Off by default. |
+| **Ignore particles** | Drops particles landing within three blocks of an ignored player, for plugins that give players particle effects. Off by default, and a proximity guess rather than ownership. |
 | **Click through** | Blocks and entities behind an ignored player stay clickable, so someone standing in your way cannot block you. |
 | **Ignore everyone** | Applies all of the above to every player except yourself, without listing them one by one. |
 | **Strip trailing symbols** | Removes a single decorative symbol from the end of incoming chat messages. Applies to all messages, not only ignored players. |
-| **Transparency** | How visible ignored players stay, from 0 (invisible) to 255 (fully solid). |
+| **Transparency** | How visible ignored players stay, from 0 (invisible) to 255 (fully solid). This starts at 255, which means turning on *ignore rendering* alone changes nothing you can see until you lower it. |
 
 ## Requirements
 
@@ -52,21 +54,24 @@ All of these can be rebound under Options → Controls → Ignoring Hotkeys.
 
 ### Commands
 
-The commands run on your client only; nothing is sent to the server.
+These are client commands: they run on your client only and nothing is sent to the
+server. Running `/ignoring` on its own prints this list in game.
 
 | Command | What it does |
 | --- | --- |
-| `!ignoring:addignore <player>` | Add a player to the ignore list |
-| `!ignoring:removeignore <player>` | Remove a player from the ignore list |
-| `!ignoring:listignore` | Show everyone currently ignored |
-| `!ignoring:togglerender` | Toggle ignore rendering |
-| `!ignoring:togglechat` | Toggle ignore chat |
-| `!ignoring:toggletablist` | Toggle ignore tab list |
-| `!ignoring:toggleinteraction` | Toggle click through ignored players |
-| `!ignoring:transparency <0-255>` | Set how visible ignored players stay |
-| `!ignoring:reload` | Reload the config file from disk |
-| `!ignoring:version` | Show which build of Ignoring is installed |
-| `!ignoring:help` | List every command |
+| `/ignoring addignore <player>` | Add a player to the ignore list. Tab completes from everyone online who is not on it yet |
+| `/ignoring removeignore <player>` | Remove a player from the ignore list. Tab completes from the list |
+| `/ignoring listignore` | Show everyone currently ignored |
+| `/ignoring togglerender` | Toggle ignore rendering |
+| `/ignoring togglechat` | Toggle ignore chat |
+| `/ignoring toggletablist` | Toggle ignore tab list |
+| `/ignoring togglenameplates` | Toggle hiding server drawn name plates |
+| `/ignoring toggleparticles` | Toggle hiding particles around ignored players |
+| `/ignoring toggleinteraction` | Toggle click through ignored players |
+| `/ignoring transparency <0-255>` | Set how visible ignored players stay |
+| `/ignoring reload` | Reload the config file from disk |
+| `/ignoring version` | Show which build of Ignoring is installed |
+| `/ignoring help` | List every command |
 
 ## Known issues
 
@@ -77,9 +82,9 @@ its text field, so it looks like an unresponsive input box. Scrolling the list s
 row sits well inside the visible area makes it editable again; a lower GUI scale or a
 larger window gives it more room.
 
-If you would rather not fight the screen, `!ignoring:addignore <player>` and
-`!ignoring:removeignore <player>` edit the same list and always work. You can also edit
-`config/ignoring.json` by hand and run `!ignoring:reload`.
+If you would rather not fight the screen, `/ignoring addignore <player>` and
+`/ignoring removeignore <player>` edit the same list and always work. You can also edit
+`config/ignoring.json` by hand and run `/ignoring reload`.
 
 ## Versions
 

@@ -15,6 +15,11 @@ def targetJavaVersion = 25
 repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content { includeGroup "maven.modrinth" }
+    }
 }
 
 dependencies {
@@ -26,6 +31,10 @@ dependencies {
     api("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // Compiled against, never shipped: the voice chat integration only runs when
+    // the mod is actually installed.
+    compileOnly "maven.modrinth:simple-voice-chat:${project.voicechat_version}"
 
     compileOnly "org.projectlombok:lombok:1.18.48"
     annotationProcessor "org.projectlombok:lombok:1.18.48"

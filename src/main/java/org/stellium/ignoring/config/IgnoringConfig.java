@@ -35,6 +35,10 @@ public class IgnoringConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
+    public boolean muteVoiceChat = false;
+
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.TransitiveObject
     public boolean ignoreTablist = false;
 
     @ConfigEntry.Gui.Tooltip(count = 2)

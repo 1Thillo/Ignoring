@@ -71,6 +71,7 @@ public class Ignoring implements ModInitializer {
         KeyMappingHelper.registerKeyMapping(toggleIgnoreChatKeybind);
         KeyMappingHelper.registerKeyMapping(toggleIgnoreTablistKeybind);
         KeyMappingHelper.registerKeyMapping(toggleInteractionThroughIgnoredPlayerKeybind);
+        ClientTickEvents.END_CLIENT_TICK.register(org.stellium.ignoring.compat.VoiceChatCompat::tick);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (openConfigKeybind.consumeClick()) {
                 client.setScreenAndShow(AutoConfigClient.getConfigScreen(IgnoringConfig.class, client.gui.screen()).get());

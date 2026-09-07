@@ -40,7 +40,14 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: mod-jar
-          path: build/libs/*.jar
+          # The sources jar carries a fabric.mod.json whose version is still the
+          # unexpanded ${version} placeholder, so dropping it into a mods folder
+          # gives the loader a second, broken copy of this mod. It has no use to
+          # anyone installing the mod, and this artifact is what gets attached to
+          # releases, so it stays out.
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
           if-no-files-found: error
 
   client-smoke-test:

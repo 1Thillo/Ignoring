@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -43,6 +44,13 @@ public class EntityRenderDispatcherMixin {
         EntityRenderState state = cir.getReturnValue();
         if (state != null) {
             IGNORING$STATE_ENTITY.get().put(state, entity);
+        }
+    }
+
+    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
+    private void ignoring$hideIgnoredNameplates(Entity entity, Frustum frustum, double x, double y, double z, CallbackInfoReturnable<Boolean> cir) {
+        if (IgnoringConfig.get().shouldIgnoreNameplate(entity)) {
+            cir.setReturnValue(false);
         }
     }
 

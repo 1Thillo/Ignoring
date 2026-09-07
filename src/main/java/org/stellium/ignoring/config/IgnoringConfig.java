@@ -6,6 +6,8 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
@@ -22,6 +24,10 @@ public class IgnoringConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
     public boolean ignoreRender = false;
+
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.TransitiveObject
+    public boolean ignoreNameplates = false;
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
@@ -79,6 +85,43 @@ public class IgnoringConfig implements ConfigData {
         return isListedName(player.getScoreboardName())
             || isListedName(player.getName().getString())
             || isListedName(player.getGameProfile().name());
+    }
+
+    /**
+     * Some servers draw their own name plates as separate entities above a player
+     * rather than using the vanilla name tag, which is why those survive
+     * {@link #shouldIgnorePlayer}: they are not players. This matches such an
+     * entity by the name it displays. Only the explicit ignore list is consulted;
+     * ignoreEveryone would take every hologram and named armour stand on the
+     * server with it.
+     */
+    public boolean shouldIgnoreNameplate(Entity entity) {
+        if (!ignoreNameplates || entity instanceof Player) {
+            return false;
+        }
+
+        String text = nameplateText(entity);
+        if (text == null || text.isBlank()) {
+            return false;
+        }
+
+        for (String ignored : ignoredPlayerList) {
+            if (ignored != null && !ignored.isBlank() && text.contains(ignored)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String nameplateText(Entity entity) {
+        if (entity instanceof Display.TextDisplay display) {
+            Display.TextDisplay.TextRenderState state = display.textRenderState();
+            return state == null || state.text() == null ? null : state.text().getString();
+        }
+
+        Component customName = entity.getCustomName();
+        return customName == null ? null : customName.getString();
     }
 
     public boolean isPlayerIgnored(String playerName) {

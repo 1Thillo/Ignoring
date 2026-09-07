@@ -17,6 +17,8 @@ player is affected, and nothing you do here changes what anyone else sees.
 | **Ignore chat** | Chat messages that mention an ignored player are dropped before they reach your chat window. |
 | **Ignore rendering** | Ignored players are drawn transparently, or hidden completely at transparency 0. Armour, held items, name tags and shadows all follow the same setting. |
 | **Ignore tab list** | Ignored players are removed from the player list you see when holding Tab. |
+| **Ignore server name plates** | Hides floating name plates that show an ignored player's name, for servers that draw their own instead of using the vanilla name tag. Off by default. |
+| **Ignore particles** | Drops particles landing within three blocks of an ignored player, for plugins that give players particle effects. Off by default, and a proximity guess rather than ownership. |
 | **Click through** | Blocks and entities behind an ignored player stay clickable, so someone standing in your way cannot block you. |
 | **Ignore everyone** | Applies all of the above to every player except yourself, without listing them one by one. |
 | **Strip trailing symbols** | Removes a single decorative symbol from the end of incoming chat messages. Applies to all messages, not only ignored players. |

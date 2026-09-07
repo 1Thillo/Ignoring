@@ -64,6 +64,8 @@ name itself starts with `!`, so the full input is `/!ignoring:...`.
 | `/!ignoring:togglerender` | Toggle ignore rendering |
 | `/!ignoring:togglechat` | Toggle ignore chat |
 | `/!ignoring:toggletablist` | Toggle ignore tab list |
+| `/!ignoring:togglenameplates` | Toggle hiding server drawn name plates |
+| `/!ignoring:toggleparticles` | Toggle hiding particles around ignored players |
 | `/!ignoring:toggleinteraction` | Toggle click through ignored players |
 | `/!ignoring:transparency <0-255>` | Set how visible ignored players stay |
 | `/!ignoring:reload` | Reload the config file from disk |

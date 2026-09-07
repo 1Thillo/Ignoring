@@ -34,6 +34,8 @@
 
   "text.ignoring.toggle.ignoreRender": "Ignore Render",
   "text.ignoring.toggle.ignoreChat": "Ignore Chat",
+  "text.ignoring.toggle.ignoreNameplates": "Ignore Name Plates",
+  "text.ignoring.toggle.ignoreParticles": "Ignore Particles",
   "text.ignoring.toggle.ignoreTablist": "Ignore Tablist",
   "text.ignoring.toggle.interactionThroughIgnoredPlayer": "Click-Through",
   "text.ignoring.status.enabled": "Enabled",
@@ -43,6 +45,8 @@
   "text.ignoring.command.help.togglerender": "Toggle render ignoring",
   "text.ignoring.command.help.togglechat": "Toggle chat ignoring",
   "text.ignoring.command.help.toggletablist": "Toggle tablist ignoring",
+  "text.ignoring.command.help.togglenameplates": "Toggle hiding server drawn name plates",
+  "text.ignoring.command.help.toggleparticles": "Toggle hiding particles around ignored players",
   "text.ignoring.command.help.toggleinteraction": "Toggle interaction through ignored players",
   "text.ignoring.command.help.addignore": "Add player to ignore list",
   "text.ignoring.command.help.removeignore": "Remove player from ignore list",

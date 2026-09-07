@@ -25,6 +25,12 @@ public class IgnoringCommands {
         dispatcher.register(ClientCommands.literal("!ignoring:toggletablist")
             .executes(IgnoringCommands::toggleTablist));
 
+        dispatcher.register(ClientCommands.literal("!ignoring:togglenameplates")
+            .executes(IgnoringCommands::toggleNameplates));
+
+        dispatcher.register(ClientCommands.literal("!ignoring:toggleparticles")
+            .executes(IgnoringCommands::toggleParticles));
+
         dispatcher.register(ClientCommands.literal("!ignoring:toggleinteraction")
             .executes(IgnoringCommands::toggleInteraction));
 
@@ -88,6 +94,32 @@ public class IgnoringCommands {
             .append(Component.literal(": "))
             .append(Component.translatable(config.ignoreTablist ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
                 .withStyle(config.ignoreTablist ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
+    private static int toggleNameplates(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.ignoreNameplates = !config.ignoreNameplates;
+        saveConfig();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.ignoreNameplates")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.ignoreNameplates ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.ignoreNameplates ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
+    private static int toggleParticles(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.ignoreParticles = !config.ignoreParticles;
+        saveConfig();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.ignoreParticles")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.ignoreParticles ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.ignoreParticles ? ChatFormatting.GREEN : ChatFormatting.RED)));
 
         return 1;
     }
@@ -225,6 +257,16 @@ public class IgnoringCommands {
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.toggletablist").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("!ignoring:togglenameplates")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.togglenameplates").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("!ignoring:toggleparticles")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.toggleparticles").withStyle(ChatFormatting.GRAY)));
 
         context.getSource().sendFeedback(Component.literal("!ignoring:toggleinteraction")
             .withStyle(ChatFormatting.YELLOW)

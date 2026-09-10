@@ -34,6 +34,10 @@ import java.util.Optional;
  * <p>So if the clickable text is more than just the name, the message is private. That test
  * needs no knowledge of the server's arrow glyph, bracket style or language, which matters
  * because the word for "you" in a whisper header is translated per server.
+ *
+ * <p>It does assume the shown name and the account name differ at most in capitalisation. A
+ * server that displays a free-form nickname while whispering to the account name would make a
+ * public line look like a header, and it would be treated as private.
  */
 public final class ChatSenderResolver {
 
@@ -58,7 +62,8 @@ public final class ChatSenderResolver {
             String name = whisperTarget(command);
             if (name != null) {
                 // Only the name itself means a public message; a whole header means a whisper.
-                boolean privateMessage = !node.getString().trim().equals(name);
+                // Compared without case, because a server may show GFiti for the account Gfiti.
+                boolean privateMessage = !node.getString().trim().equalsIgnoreCase(name);
                 return Optional.of(new ChatSender(name, privateMessage));
             }
         }

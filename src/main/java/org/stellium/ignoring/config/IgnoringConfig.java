@@ -23,7 +23,7 @@ public class IgnoringConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject
-    public boolean allowPrivateMessages = true;
+    public boolean ignorePrivateMessages = false;
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.TransitiveObject

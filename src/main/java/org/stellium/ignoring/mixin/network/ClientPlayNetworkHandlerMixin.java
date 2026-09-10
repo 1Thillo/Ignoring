@@ -24,6 +24,7 @@ import org.stellium.ignoring.debug.ChatDebugDump;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,7 +52,7 @@ public class ClientPlayNetworkHandlerMixin {
 
         String raw = original.getString();
 
-        if (config.ignoreChat && shouldHide(config, original, raw)) {
+        if (shouldHide(config, original, raw)) {
             ci.cancel();
             return;
         }
@@ -66,27 +67,37 @@ public class ClientPlayNetworkHandlerMixin {
     }
 
     /**
-     * A message the server made clickable tells us who wrote it, so an ignored player's chat
+     * Public chat and whispers are filtered by their own switch, so someone can be silenced in
+     * the channel everyone reads while still being able to reach you privately, or the other
+     * way round.
+     *
+     * <p>A message the server made clickable tells us who wrote it, so an ignored player's chat
      * can be dropped without dropping every message that merely mentions their name. Messages
-     * without such a marker, such as join announcements, still fall back to a plain text match
-     * so that they keep disappearing the way they always have.
+     * carrying no such marker, such as join announcements, count as public and fall back to a
+     * plain text match so that they keep disappearing the way they always have.
      */
     private static boolean shouldHide(IgnoringConfig config, Component message, String raw) {
         ChatSender sender = ChatSenderResolver.resolve(message).orElse(null);
 
         if (sender == null) {
+            if (!config.ignoreChat) {
+                return false;
+            }
             if (config.ignoreEveryone) {
                 return true;
             }
+            // Without case, because a server may write GFiti where the account is Gfiti.
+            String haystack = raw.toLowerCase(Locale.ROOT);
             for (String playerName : config.ignoredPlayerList) {
-                if (raw.contains(playerName)) {
+                if (haystack.contains(playerName.toLowerCase(Locale.ROOT))) {
                     return true;
                 }
             }
             return false;
         }
 
-        if (sender.privateMessage() && config.allowPrivateMessages) {
+        boolean filtered = sender.privateMessage() ? config.ignorePrivateMessages : config.ignoreChat;
+        if (!filtered) {
             return false;
         }
 

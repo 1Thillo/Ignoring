@@ -14,7 +14,8 @@ player is affected, and nothing you do here changes what anyone else sees.
 
 | Feature | What it does |
 | --- | --- |
-| **Ignore chat** | Chat messages that mention an ignored player are dropped before they reach your chat window. |
+| **Ignore public chat** | Public chat written by an ignored player is dropped before it reaches your chat window. |
+| **Ignore private messages** | Whispers from an ignored player are dropped. A separate switch, so you can silence someone in public chat and still let them reach you privately, or the other way round. |
 | **Ignore rendering** | Ignored players are drawn transparently, or hidden completely at transparency 0. Armour, held items, name tags and shadows all follow the same setting. |
 | **Ignore tab list** | Ignored players are removed from the player list you see when holding Tab. |
 | **Ignore server name plates** | Hides floating name plates that show an ignored player's name, for servers that draw their own instead of using the vanilla name tag. Off by default. |
@@ -50,7 +51,7 @@ All of these can be rebound under Options → Controls → Ignoring Hotkeys.
 | --- | --- |
 | `P` | Open the settings screen |
 | `;` | Toggle ignore rendering |
-| `'` | Toggle ignore chat |
+| `'` | Toggle ignore public chat |
 | unbound | Toggle ignore tab list |
 | unbound | Toggle click through ignored players |
 
@@ -69,8 +70,8 @@ server. Running `/ignoring` on its own prints this list in game.
 | `/ignoring removeignore <player>` | Remove a player from the ignore list. Tab completes from the list |
 | `/ignoring listignore` | Show everyone currently ignored |
 | `/ignoring togglerender` | Toggle ignore rendering |
-| `/ignoring togglechat` | Toggle ignore chat |
-| `/ignoring toggleprivate` | Toggle letting whispers through from ignored players |
+| `/ignoring togglechat` | Toggle hiding public chat from ignored players |
+| `/ignoring togglemsg` | Toggle hiding whispers from ignored players |
 | `/ignoring toggletablist` | Toggle ignore tab list |
 | `/ignoring togglenameplates` | Toggle hiding server drawn name plates |
 | `/ignoring toggleparticles` | Toggle hiding particles around ignored players |
@@ -82,24 +83,26 @@ server. Running `/ignoring` on its own prints this list in game.
 | `/ignoring version` | Show which build of Ignoring is installed |
 | `/ignoring help` | List every command |
 
-### Private messages
+### Public chat and private messages
 
-Ignoring someone hides what they say in public chat, but you probably still want their
-whispers to reach you. **Always Show Private Messages** is on by default and does exactly
-that: `/msg` keeps working in both directions even while the sender is ignored. Turn it
-off, and whispers disappear along with everything else.
+These are two independent switches. **Ignore Public Chat** drops what an ignored player
+writes in the channel everyone reads; **Ignore Private Messages** drops their whispers.
+Turning on one does not touch the other, so you can silence someone in public and still let
+them reach you privately, or block their whispers while still following the main chat. Both
+are off by default.
 
 Telling the two apart is not something the client can do on its own. Most servers format
 chat themselves and send the finished line as plain text, which throws away the marker
 Minecraft would normally use. What survives is the clickable name: servers make it start a
 whisper, and that click carries the player's real name. On a public line only the name is
 clickable, on a whisper the whole `[A » B]` header is — and that difference is what the mod
-reads. It needs no knowledge of the server's language or punctuation.
+reads. It needs no knowledge of the server's language or punctuation, and it uses the real
+account name rather than a nickname the server displays.
 
-On a server that does not make names clickable, no such marker exists. Chat filtering then
-falls back to matching the player's name against the text, and private messages cannot be
-told apart. `/ignoring debug chat` writes incoming chat to `logs/latest.log` so you can see
-which of the two your server does.
+On a server that does not make names clickable, no such marker exists. Everything then
+counts as public chat, filtered by matching the player's name against the text, and whispers
+cannot be told apart. `/ignoring debug chat` writes incoming chat to `logs/latest.log` so you
+can see which of the two your server does.
 
 ## Known issues
 

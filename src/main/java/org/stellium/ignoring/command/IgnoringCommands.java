@@ -31,6 +31,7 @@ public class IgnoringCommands {
 
         sub(root, "togglerender", IgnoringCommands::toggleRender);
         sub(root, "togglechat", IgnoringCommands::toggleChat);
+        sub(root, "toggleprivate", IgnoringCommands::togglePrivateMessages);
         sub(root, "toggletablist", IgnoringCommands::toggleTablist);
         sub(root, "togglenameplates", IgnoringCommands::toggleNameplates);
         sub(root, "toggleparticles", IgnoringCommands::toggleParticles);
@@ -122,6 +123,19 @@ public class IgnoringCommands {
             .append(Component.literal(": "))
             .append(Component.translatable(config.ignoreChat ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
                 .withStyle(config.ignoreChat ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
+    private static int togglePrivateMessages(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.allowPrivateMessages = !config.allowPrivateMessages;
+        saveConfig();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.allowPrivateMessages")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.allowPrivateMessages ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.allowPrivateMessages ? ChatFormatting.GREEN : ChatFormatting.RED)));
 
         return 1;
     }
@@ -343,6 +357,11 @@ public class IgnoringCommands {
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.togglechat").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("/ignoring toggleprivate")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.toggleprivate").withStyle(ChatFormatting.GRAY)));
 
         context.getSource().sendFeedback(Component.literal("/ignoring toggletablist")
             .withStyle(ChatFormatting.YELLOW)

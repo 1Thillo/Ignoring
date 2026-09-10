@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.stellium.ignoring.chat.ChatSender;
+import org.stellium.ignoring.chat.ChatSenderResolver;
 import org.stellium.ignoring.config.IgnoringConfig;
 import org.stellium.ignoring.debug.ChatDebugDump;
 
@@ -49,17 +51,9 @@ public class ClientPlayNetworkHandlerMixin {
 
         String raw = original.getString();
 
-        if (config.ignoreChat) {
-            if (config.ignoreEveryone) {
-                ci.cancel();
-                return;
-            }
-            for (String playerName : config.ignoredPlayerList) {
-                if (raw.contains(playerName)) {
-                    ci.cancel();
-                    return;
-                }
-            }
+        if (config.ignoreChat && shouldHide(config, original, raw)) {
+            ci.cancel();
+            return;
         }
 
         if (!config.ignoreSpecialCharacter) return;
@@ -69,6 +63,43 @@ public class ClientPlayNetworkHandlerMixin {
 
         ci.cancel();
         Minecraft.getInstance().gui.hud.getChat().addServerSystemMessage(modified);
+    }
+
+    /**
+     * A message the server made clickable tells us who wrote it, so an ignored player's chat
+     * can be dropped without dropping every message that merely mentions their name. Messages
+     * without such a marker, such as join announcements, still fall back to a plain text match
+     * so that they keep disappearing the way they always have.
+     */
+    private static boolean shouldHide(IgnoringConfig config, Component message, String raw) {
+        ChatSender sender = ChatSenderResolver.resolve(message).orElse(null);
+
+        if (sender == null) {
+            if (config.ignoreEveryone) {
+                return true;
+            }
+            for (String playerName : config.ignoredPlayerList) {
+                if (raw.contains(playerName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if (sender.privateMessage() && config.allowPrivateMessages) {
+            return false;
+        }
+
+        return config.ignoreEveryone || isIgnored(config, sender.name());
+    }
+
+    private static boolean isIgnored(IgnoringConfig config, String playerName) {
+        for (String ignored : config.ignoredPlayerList) {
+            if (ignored.equalsIgnoreCase(playerName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

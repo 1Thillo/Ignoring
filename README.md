@@ -70,6 +70,7 @@ server. Running `/ignoring` on its own prints this list in game.
 | `/ignoring listignore` | Show everyone currently ignored |
 | `/ignoring togglerender` | Toggle ignore rendering |
 | `/ignoring togglechat` | Toggle ignore chat |
+| `/ignoring toggleprivate` | Toggle letting whispers through from ignored players |
 | `/ignoring toggletablist` | Toggle ignore tab list |
 | `/ignoring togglenameplates` | Toggle hiding server drawn name plates |
 | `/ignoring toggleparticles` | Toggle hiding particles around ignored players |
@@ -80,6 +81,25 @@ server. Running `/ignoring` on its own prints this list in game.
 | `/ignoring debug chat` | Write incoming chat to the log file, to work out how a server formats its messages |
 | `/ignoring version` | Show which build of Ignoring is installed |
 | `/ignoring help` | List every command |
+
+### Private messages
+
+Ignoring someone hides what they say in public chat, but you probably still want their
+whispers to reach you. **Always Show Private Messages** is on by default and does exactly
+that: `/msg` keeps working in both directions even while the sender is ignored. Turn it
+off, and whispers disappear along with everything else.
+
+Telling the two apart is not something the client can do on its own. Most servers format
+chat themselves and send the finished line as plain text, which throws away the marker
+Minecraft would normally use. What survives is the clickable name: servers make it start a
+whisper, and that click carries the player's real name. On a public line only the name is
+clickable, on a whisper the whole `[A » B]` header is — and that difference is what the mod
+reads. It needs no knowledge of the server's language or punctuation.
+
+On a server that does not make names clickable, no such marker exists. Chat filtering then
+falls back to matching the player's name against the text, and private messages cannot be
+told apart. `/ignoring debug chat` writes incoming chat to `logs/latest.log` so you can see
+which of the two your server does.
 
 ## Known issues
 

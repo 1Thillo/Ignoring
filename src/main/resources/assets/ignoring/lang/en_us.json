@@ -59,6 +59,9 @@
   "text.ignoring.command.help.reload": "Reload config from file",
   "text.ignoring.command.help.version": "Show the installed Ignoring version",
   "text.ignoring.command.help.help": "Show this help message",
+  "text.ignoring.command.help.debugchat": "Log incoming chat to the log file for diagnosis",
+  "text.ignoring.toggle.chatDebug": "Chat debug logging",
+  "text.ignoring.command.debug.chat.hint": "Incoming chat is now written to logs/latest.log. Send a public message and have someone whisper you, then turn this off again.",
 
   "text.ignoring.command.addignore.success": "Added '%s' to ignore list",
   "text.ignoring.command.addignore.duplicate": "Player '%s' is already in the ignore list",

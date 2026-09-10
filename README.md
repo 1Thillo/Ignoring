@@ -77,6 +77,7 @@ server. Running `/ignoring` on its own prints this list in game.
 | `/ignoring toggleinteraction` | Toggle click through ignored players |
 | `/ignoring transparency <0-255>` | Set how visible ignored players stay |
 | `/ignoring reload` | Reload the config file from disk |
+| `/ignoring debug chat` | Write incoming chat to the log file, to work out how a server formats its messages |
 | `/ignoring version` | Show which build of Ignoring is installed |
 | `/ignoring help` | List every command |
 

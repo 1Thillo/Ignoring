@@ -19,6 +19,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import org.stellium.ignoring.config.IgnoringConfig;
+import org.stellium.ignoring.debug.ChatDebugDump;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -30,6 +31,7 @@ public class IgnoringCommands {
 
         sub(root, "togglerender", IgnoringCommands::toggleRender);
         sub(root, "togglechat", IgnoringCommands::toggleChat);
+        sub(root, "togglemsg", IgnoringCommands::toggleMsg);
         sub(root, "toggletablist", IgnoringCommands::toggleTablist);
         sub(root, "togglenameplates", IgnoringCommands::toggleNameplates);
         sub(root, "toggleparticles", IgnoringCommands::toggleParticles);
@@ -63,6 +65,12 @@ public class IgnoringCommands {
         transparency.then(transparencyValue);
         root.then(transparency);
 
+        LiteralArgumentBuilder<FabricClientCommandSource> debugChat = ClientCommands.literal("chat");
+        debugChat.executes(IgnoringCommands::toggleChatDebug);
+        LiteralArgumentBuilder<FabricClientCommandSource> debug = ClientCommands.literal("debug");
+        debug.then(debugChat);
+        root.then(debug);
+
         dispatcher.register(root);
     }
 
@@ -71,6 +79,26 @@ public class IgnoringCommands {
         LiteralArgumentBuilder<FabricClientCommandSource> node = ClientCommands.literal(name);
         node.executes(action);
         root.then(node);
+    }
+
+    /**
+     * Logs incoming chat exactly as the server sent it, so a server's own message format can
+     * be read off the log instead of guessed at. Session only, never stored in the config.
+     */
+    private static int toggleChatDebug(CommandContext<FabricClientCommandSource> context) {
+        boolean enabled = ChatDebugDump.toggle();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.chatDebug")
+            .append(Component.literal(": "))
+            .append(Component.translatable(enabled ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        if (enabled) {
+            context.getSource().sendFeedback(Component.translatable("text.ignoring.command.debug.chat.hint")
+                .withStyle(ChatFormatting.GRAY));
+        }
+
+        return 1;
     }
 
     private static int toggleRender(CommandContext<FabricClientCommandSource> context) {
@@ -95,6 +123,19 @@ public class IgnoringCommands {
             .append(Component.literal(": "))
             .append(Component.translatable(config.ignoreChat ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
                 .withStyle(config.ignoreChat ? ChatFormatting.GREEN : ChatFormatting.RED)));
+
+        return 1;
+    }
+
+    private static int toggleMsg(CommandContext<FabricClientCommandSource> context) {
+        IgnoringConfig config = IgnoringConfig.get();
+        config.ignorePrivateMessages = !config.ignorePrivateMessages;
+        saveConfig();
+
+        context.getSource().sendFeedback(Component.translatable("text.ignoring.toggle.ignorePrivateMessages")
+            .append(Component.literal(": "))
+            .append(Component.translatable(config.ignorePrivateMessages ? "text.ignoring.status.enabled" : "text.ignoring.status.disabled")
+                .withStyle(config.ignorePrivateMessages ? ChatFormatting.GREEN : ChatFormatting.RED)));
 
         return 1;
     }
@@ -317,6 +358,11 @@ public class IgnoringCommands {
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.togglechat").withStyle(ChatFormatting.GRAY)));
 
+        context.getSource().sendFeedback(Component.literal("/ignoring togglemsg")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.togglemsg").withStyle(ChatFormatting.GRAY)));
+
         context.getSource().sendFeedback(Component.literal("/ignoring toggletablist")
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
@@ -371,6 +417,11 @@ public class IgnoringCommands {
             .withStyle(ChatFormatting.YELLOW)
             .append(Component.literal(" - "))
             .append(Component.translatable("text.ignoring.command.help.version").withStyle(ChatFormatting.GRAY)));
+
+        context.getSource().sendFeedback(Component.literal("/ignoring debug chat")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(Component.literal(" - "))
+            .append(Component.translatable("text.ignoring.command.help.debugchat").withStyle(ChatFormatting.GRAY)));
 
         context.getSource().sendFeedback(Component.literal("/ignoring help")
             .withStyle(ChatFormatting.YELLOW)

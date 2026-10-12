@@ -1,0 +1,14 @@
+# Dependabot opens pull requests when a GitHub Action has a new version.
+#
+# Gradle dependencies are left out on purpose: Fabric Loader, Fabric API, Loom and Cloth Config
+# are tied to the Minecraft version, so an update is part of a port to a new Minecraft version and
+# not a routine bump. Security alerts for them still arrive through Dependabot alerts.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
